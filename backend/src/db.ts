@@ -1,15 +1,34 @@
-import mongoose, { Model, Schema } from 'mongoose';
-import env from 'dotenv';
+import mongoose, { model, Schema } from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-mongoose.connect("MONGODB_URL");
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGODB_URL) {
+      throw new Error("MONGODB_URL not defined in .env");
+    }
 
-const UserSchema = new Model ({
-    username: {
-        type: String,
-        unique: true
-    },
-    password: String
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("MongoDB connected successfully ");
+  } catch (error) {
+    console.error("MongoDB connection failed ");
+    console.error(error);
+    
+  }
+};
 
-})
+connectDB();
 
-export const UserModel = mongoose.model("User", UserSchema)
+const UserSchema = new Schema({
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
+export const UserModel = model("User", UserSchema);
